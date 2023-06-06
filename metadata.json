@@ -1,0 +1,7 @@
+{
+  "name": "Maccy Menu",
+  "description": "Menu Item like MacOS",
+  "uuid": "maccymenu@dgvai.com",
+  "shell-version": ["43", "44"],
+  "settings-schema": "org.gnome.shell.extensions.maccymenu"
+}

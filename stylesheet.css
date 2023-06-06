@@ -1,0 +1,7 @@
+.menu-button {
+  width: 16px;
+  height: 16px;
+  margin: 1px 0 0 0;
+  background: url("assets/ubuntu.svg");
+  background-size: 16px;
+}
