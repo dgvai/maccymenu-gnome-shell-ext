@@ -3,93 +3,36 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const GObject = imports.gi.GObject;
 const St = imports.gi.St;
-const Lang = imports.lang;
 const Util = imports.misc.util;
+const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const ICON_CLASS = {
-  0: "apple-icon",
-  1: "ubuntu-icon",
-  2: "fedora-icon",
-  3: "linux-icon",
-};
-
-const Layout = [
-  {
-    type: "menu",
-    title: "About This PC",
-    cmds: ["gnome-control-center", "info-overview"],
-  },
-  {
-    type: "separator",
-  },
-  {
-    type: "menu",
-    title: "System Preferences...",
-    cmds: ["gnome-control-center"],
-  },
-  {
-    type: "menu",
-    title: "App Store...",
-    cmds: ["snap-store"],
-  },
-  {
-    type: "separator",
-  },
-  {
-    type: "menu",
-    title: "Force Quit",
-    cmds: ["xkill"],
-  },
-  {
-    type: "separator",
-  },
-  {
-    type: "menu",
-    title: "Sleep",
-    cmds: ["systemctl", "suspend"],
-  },
-  {
-    type: "menu",
-    title: "Restart...",
-    cmds: ["gnome-session-quit", "--reboot"],
-  },
-  {
-    type: "menu",
-    title: "Shut Down...",
-    cmds: ["gnome-session-quit", "--power-off"],
-  },
-  {
-    type: "separator",
-  },
-  {
-    type: "menu",
-    title: "Logout...",
-    cmds: ["gnome-session-quit", "--logout"],
-  },
-];
+const { ICON_CLASS } = Me.imports.classes;
+const { LAYOUT } = Me.imports.layout;
 
 class MaccyMenu extends PanelMenu.Button {
   static {
     GObject.registerClass(this);
   }
 
-  constructor() {
+  constructor(layout) {
     super(1, null, false);
     this.loadConfig();
     this.setIcon();
-    this.generateLayout();
+    this.generateLayout(layout);
   }
 
   loadConfig() {
     this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
 
-    this._settingsC = this._settings.connect("changed", this.resetIcon.bind(this));
+    this._settingsC = this._settings.connect(
+      "changed",
+      this.resetIcon.bind(this)
+    );
   }
 
   setIcon() {
-    if(this.icon ) delete this.icon
     const icon_class = ICON_CLASS[this._settings.get_enum("icon")];
     this.icon = new St.Icon({
       style_class: icon_class,
@@ -99,16 +42,12 @@ class MaccyMenu extends PanelMenu.Button {
   }
 
   resetIcon() {
-    this.remove_actor(this.icon)
-    const icon_class = ICON_CLASS[this._settings.get_enum("icon")];
-    this.icon = new St.Icon({
-      style_class: icon_class,
-    });
-    this.add_actor(this.icon);
+    this.remove_actor(this.icon);
+    this.setIcon();
   }
 
-  generateLayout() {
-    Layout.forEach((item) => {
+  generateLayout(layout) {
+    layout.forEach((item) => {
       switch (item.type) {
         case "menu":
           this.makeMenu(item.title, item.cmds);
@@ -144,11 +83,10 @@ class MaccyMenu extends PanelMenu.Button {
 
 let MenuButton;
 
-function init() {
-  MenuButton = new MaccyMenu();
-}
+function init() {}
 
 function enable() {
+  MenuButton = new MaccyMenu(LAYOUT);
   Main.panel.statusArea.activities?.hide();
   Main.panel.addToStatusArea("maccyMenuButton", MenuButton, 0, "left");
 }
