@@ -5,6 +5,15 @@ const GObject = imports.gi.GObject;
 const St = imports.gi.St;
 const Lang = imports.lang;
 const Util = imports.misc.util;
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
+
+const ICON_CLASS = {
+  0: "apple-icon",
+  1: "ubuntu-icon",
+  2: "fedora-icon",
+  3: "linux-icon",
+};
 
 const Layout = [
   {
@@ -68,13 +77,37 @@ class MaccyMenu extends PanelMenu.Button {
 
   constructor() {
     super(1, null, false);
+    this.loadConfig();
+    this.setIcon();
+    this.generateLayout();
+  }
 
+  loadConfig() {
+    this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
+
+    this._settingsC = this._settings.connect("changed", this.resetIcon.bind(this));
+  }
+
+  setIcon() {
+    if(this.icon ) delete this.icon
+    const icon_class = ICON_CLASS[this._settings.get_enum("icon")];
     this.icon = new St.Icon({
-      style_class: "menu-button",
+      style_class: icon_class,
     });
 
-    this.actor.add_actor(this.icon);
+    this.add_actor(this.icon);
+  }
 
+  resetIcon() {
+    this.remove_actor(this.icon)
+    const icon_class = ICON_CLASS[this._settings.get_enum("icon")];
+    this.icon = new St.Icon({
+      style_class: icon_class,
+    });
+    this.add_actor(this.icon);
+  }
+
+  generateLayout() {
     Layout.forEach((item) => {
       switch (item.type) {
         case "menu":
@@ -100,6 +133,13 @@ class MaccyMenu extends PanelMenu.Button {
     const separator = new PopupMenu.PopupSeparatorMenuItem();
     this.menu.addMenuItem(separator);
   }
+
+  stop() {
+    if (this._settingsC) {
+      this._settings.disconnect(this._settingsC);
+      this._settingsC = undefined;
+    }
+  }
 }
 
 let MenuButton;
@@ -114,6 +154,7 @@ function enable() {
 }
 
 function disable() {
+  MenuButton.stop();
   Main.panel.statusArea.activities?.show();
   Main.panel.statusArea.maccyMenuButton.destroy();
 }
