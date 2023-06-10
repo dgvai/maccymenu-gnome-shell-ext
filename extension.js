@@ -88,7 +88,8 @@ function enable() {
 }
 
 function disable() {
-  MenuButton.stop();
+  MenuButton.destroy();
+  MenuButton = null;
   Main.panel.statusArea.activities?.show();
   Main.panel.statusArea.maccyMenuButton.destroy();
 }
