@@ -8,11 +8,6 @@ const GeneralPrefs = Me.imports.preferences.generalPage;
 function init() {}
 
 function fillPreferencesWindow(window) {
-  let iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
-  if (!iconTheme.get_search_path().includes(Me.path + "/media")) {
-    iconTheme.add_search_path(Me.path + "/media");
-  }
-
   const settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
 
   const generalPage = new GeneralPrefs.GeneralPage(settings);
