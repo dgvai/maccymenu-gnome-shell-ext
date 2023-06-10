@@ -4,7 +4,6 @@ const PopupMenu = imports.ui.popupMenu;
 const GObject = imports.gi.GObject;
 const St = imports.gi.St;
 const Util = imports.misc.util;
-const Lang = imports.lang;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
@@ -61,10 +60,7 @@ class MaccyMenu extends PanelMenu.Button {
 
   makeMenu(title, cmds) {
     const popUpMenu = new PopupMenu.PopupMenuItem(title);
-    popUpMenu.connect(
-      "activate",
-      Lang.bind(this, () => Util.spawn(cmds))
-    );
+    popUpMenu.connect("activate", () => Util.spawn(cmds).bind(this));
     this.menu.addMenuItem(popUpMenu);
   }
 
