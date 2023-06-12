@@ -26,10 +26,7 @@ class MaccyMenu extends PanelMenu.Button {
   loadConfig() {
     this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
 
-    this._settingsC = this._settings.connect(
-      "changed::icon",
-      this.resetIcon.bind(this)
-    );
+    this._settingsC = this._settings.connect("changed::icon", this.resetIcon.bind(this));
 
     this._settingsC = this._settings.connect(
       "changed::activity-menu-visibility",
@@ -52,12 +49,11 @@ class MaccyMenu extends PanelMenu.Button {
   }
 
   toggleActivityMenuVisibility() {
-    const showActivity = this._settings.get_boolean("activity-menu-visibility")
-    if(showActivity) {
-      Main.panel.statusArea['activities'].container.show();
+    const showActivity = this._settings.get_boolean("activity-menu-visibility");
+    if (showActivity) {
+      Main.panel.statusArea["activities"].container.show();
     } else {
-      Main.panel.statusArea['activities'].container.hide();
-
+      Main.panel.statusArea["activities"].container.hide();
     }
   }
 
@@ -90,7 +86,7 @@ class MaccyMenu extends PanelMenu.Button {
       this._settings.disconnect(this._settingsC);
       this._settingsC = undefined;
     }
-    Main.panel.statusArea['activities'].container.show();
+    Main.panel.statusArea["activities"].container.show();
   }
 }
 

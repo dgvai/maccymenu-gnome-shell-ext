@@ -25,6 +25,7 @@ var GeneralPage = GObject.registerClass(
 
       let iconSelectorRow = new Adw.ComboRow({
         title: "Menu Icon",
+        subtitle: "Change the menu icon",
         model: iconsList,
         selected: this._settings.get_enum("icon"),
       });
