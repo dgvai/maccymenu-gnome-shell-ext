@@ -11,6 +11,11 @@
       <default>'apple'</default>
       <summary>Menu Icon</summary>
     </key>
+    <key type="b" name="activity-menu-visibility">
+      <default>false</default>
+      <summary>Activity Menu Visibility</summary>
+      <description>Activity Menu Visibility Status</description>
+    </key>
     <key type="i" name="prefs-default-width">
       <default>700</default>
       <summary>Default width for the preferences window</summary>

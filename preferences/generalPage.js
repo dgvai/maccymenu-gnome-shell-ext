@@ -29,11 +29,28 @@ var GeneralPage = GObject.registerClass(
         selected: this._settings.get_enum("icon"),
       });
 
+      let activityMenuSwitch = new Gtk.Switch({
+        valign: Gtk.Align.CENTER,
+        active: this._settings.get_boolean("activity-menu-visibility"),
+      });
+      let activityMenuRow = new Adw.ActionRow({
+        title: "Activity Menu",
+        subtitle: "Change the visibility of the activity menu",
+        activatable_widget: activityMenuSwitch,
+      });
+      activityMenuRow.add_suffix(activityMenuSwitch);
+
       tweaksGroup.add(iconSelectorRow);
+      tweaksGroup.add(activityMenuRow);
+
       this.add(tweaksGroup);
 
       iconSelectorRow.connect("notify::selected", (widget) => {
         this._settings.set_enum("icon", widget.selected);
+      });
+
+      activityMenuSwitch.connect("notify::active", (widget) => {
+        this._settings.set_boolean("activity-menu-visibility", widget.get_active());
       });
     }
   }
