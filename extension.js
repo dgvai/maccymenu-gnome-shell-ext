@@ -19,15 +19,18 @@ class MaccyMenu extends PanelMenu.Button {
     super(1, null, false);
     this.loadConfig();
     this.setIcon();
+    this.toggleActivityMenuVisibility();
     this.generateLayout(layout);
   }
 
   loadConfig() {
     this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
 
+    this._settingsC = this._settings.connect("changed::icon", this.resetIcon.bind(this));
+
     this._settingsC = this._settings.connect(
-      "changed",
-      this.resetIcon.bind(this)
+      "changed::activity-menu-visibility",
+      this.toggleActivityMenuVisibility.bind(this)
     );
   }
 
@@ -43,6 +46,15 @@ class MaccyMenu extends PanelMenu.Button {
   resetIcon() {
     this.remove_actor(this.icon);
     this.setIcon();
+  }
+
+  toggleActivityMenuVisibility() {
+    const showActivity = this._settings.get_boolean("activity-menu-visibility");
+    if (showActivity) {
+      Main.panel.statusArea["activities"].container.show();
+    } else {
+      Main.panel.statusArea["activities"].container.hide();
+    }
   }
 
   generateLayout(layout) {
@@ -74,6 +86,7 @@ class MaccyMenu extends PanelMenu.Button {
       this._settings.disconnect(this._settingsC);
       this._settingsC = undefined;
     }
+    Main.panel.statusArea["activities"].container.show();
   }
 }
 
@@ -83,13 +96,11 @@ function init() {}
 
 function enable() {
   MenuButton = new MaccyMenu(LAYOUT);
-  Main.panel.statusArea.activities?.hide();
   Main.panel.addToStatusArea("maccyMenuButton", MenuButton, 0, "left");
 }
 
 function disable() {
-  MenuButton.destroy();
+  MenuButton.stop();
   MenuButton = null;
-  Main.panel.statusArea.activities?.show();
   Main.panel.statusArea.maccyMenuButton.destroy();
 }
