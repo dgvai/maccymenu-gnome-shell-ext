@@ -1,31 +1,5 @@
-.ubuntu-icon {
+.menu-button {
   width: 16px;
   height: 16px;
-  margin: 1px 0 0 0;
-  background: url("assets/ubuntu.svg");
-  background-size: 16px;
-}
-
-.apple-icon {
-  width: 16px;
-  height: 16px;
-  margin: 1px 0 0 0;
-  background: url("assets/apple.svg");
-  background-size: 16px;
-}
-
-.fedora-icon {
-  width: 16px;
-  height: 16px;
-  margin: 1px 0 0 0;
-  background: url("assets/fedora.svg");
-  background-size: 16px;
-}
-
-.linux-icon {
-  width: 16px;
-  height: 16px;
-  margin: 1px 0 0 0;
-  background: url("assets/linux.svg");
-  background-size: 16px;
+  margin: 1px;
 }

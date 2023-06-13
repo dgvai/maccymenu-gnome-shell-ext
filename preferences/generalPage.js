@@ -3,6 +3,8 @@ const { Adw, Gtk, GObject } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+const { ICONS } = Me.imports.constants;
+
 var GeneralPage = GObject.registerClass(
   class OpenWeather_GeneralPage extends Adw.PreferencesPage {
     _init(settings) {
@@ -18,16 +20,13 @@ var GeneralPage = GObject.registerClass(
       });
 
       let iconsList = new Gtk.StringList();
-      iconsList.append("Apple");
-      iconsList.append("Ubuntu");
-      iconsList.append("Fedora");
-      iconsList.append("Linux");
+      ICONS.forEach((icon) => iconsList.append(icon.title));
 
       let iconSelectorRow = new Adw.ComboRow({
         title: "Menu Icon",
         subtitle: "Change the menu icon",
         model: iconsList,
-        selected: this._settings.get_enum("icon"),
+        selected: this._settings.get_int("icon"),
       });
 
       let activityMenuSwitch = new Gtk.Switch({
@@ -47,7 +46,7 @@ var GeneralPage = GObject.registerClass(
       this.add(tweaksGroup);
 
       iconSelectorRow.connect("notify::selected", (widget) => {
-        this._settings.set_enum("icon", widget.selected);
+        this._settings.set_int("icon", widget.selected);
       });
 
       activityMenuSwitch.connect("notify::active", (widget) => {
