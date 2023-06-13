@@ -1,15 +1,13 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const GObject = imports.gi.GObject;
-const GLib = imports.gi.GLib;
+const { Gio, GLib, GObject, Shell, St } = imports.gi;
 const ByteArray = imports.byteArray;
-const St = imports.gi.St;
 const Util = imports.misc.util;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const { ICON_CLASS } = Me.imports.classes;
+const { ICONS } = Me.imports.constants;
 const { LAYOUT } = Me.imports.layout;
 
 class MaccyMenu extends PanelMenu.Button {
@@ -20,13 +18,21 @@ class MaccyMenu extends PanelMenu.Button {
   constructor() {
     super(1, null, false);
 
-    const fullname = this.getLoggedInUser();
-    const layout = this.generateLayout(fullname);
-
+    this.initialize();
     this.loadConfig();
     this.setIcon();
     this.toggleActivityMenuVisibility();
+
+    const fullname = this.getLoggedInUser();
+    const layout = this.generateLayout(fullname);
     this.renderPopupMenu(layout);
+  }
+
+  initialize() {
+    this.icon = new St.Icon({
+      style_class: "menu-button",
+    });
+    this.add_actor(this.icon);
   }
 
   getLoggedInUser() {
@@ -68,7 +74,7 @@ class MaccyMenu extends PanelMenu.Button {
   loadConfig() {
     this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
 
-    this._settingsC = this._settings.connect("changed::icon", this.resetIcon.bind(this));
+    this._settingsC = this._settings.connect("changed::icon", this.setIcon.bind(this));
 
     this._settingsC = this._settings.connect(
       "changed::activity-menu-visibility",
@@ -77,17 +83,9 @@ class MaccyMenu extends PanelMenu.Button {
   }
 
   setIcon() {
-    const icon_class = ICON_CLASS[this._settings.get_enum("icon")];
-    this.icon = new St.Icon({
-      style_class: icon_class,
-    });
-
-    this.add_actor(this.icon);
-  }
-
-  resetIcon() {
-    this.remove_actor(this.icon);
-    this.setIcon();
+    const iconIndex = this._settings.get_int("icon");
+    const path = Me.path + ICONS[iconIndex].path;
+    this.icon.gicon = Gio.icon_new_for_string(path);
   }
 
   toggleActivityMenuVisibility() {
