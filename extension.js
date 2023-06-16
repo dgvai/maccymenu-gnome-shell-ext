@@ -1,8 +1,7 @@
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const { Gio, GLib, GObject, Shell, St } = imports.gi;
-const ByteArray = imports.byteArray;
+const { Gio, GLib, GObject, St } = imports.gi;
 const Util = imports.misc.util;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -23,7 +22,7 @@ class MaccyMenu extends PanelMenu.Button {
     this.setIcon();
     this.toggleActivityMenuVisibility();
 
-    const fullname = this.getLoggedInUser();
+    const fullname = GLib.get_real_name();
     const layout = this.generateLayout(fullname);
     this.renderPopupMenu(layout);
   }
@@ -33,24 +32,6 @@ class MaccyMenu extends PanelMenu.Button {
       style_class: "menu-button",
     });
     this.add_actor(this.icon);
-  }
-
-  getLoggedInUser() {
-    try {
-      let [, stdout] = GLib.spawn_command_line_sync("whoami");
-
-      if (stdout instanceof Uint8Array) {
-        const username = ByteArray.toString(stdout);
-        let [, stdout2] = GLib.spawn_command_line_sync(`getent passwd ${username}`);
-
-        if (stdout2 instanceof Uint8Array) {
-          const fullname = ByteArray.toString(stdout2).split(":")[4].replace(",,,", "");
-          return fullname;
-        }
-      }
-    } catch (e) {
-      logError(e);
-    }
   }
 
   generateLayout(fullname) {
