@@ -1,7 +1,9 @@
+imports.gi.versions.Gtk = "3.0";
+
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const { Gio, GLib, GObject, St } = imports.gi;
+const { Gtk, Gio, GLib, GObject, St } = imports.gi;
 const Util = imports.misc.util;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -21,10 +23,7 @@ class MaccyMenu extends PanelMenu.Button {
     this.loadConfig();
     this.setIcon();
     this.toggleActivityMenuVisibility();
-
-    const fullname = GLib.get_real_name();
-    const layout = this.generateLayout(fullname);
-    this.renderPopupMenu(layout);
+    this.setupPopupMenu();
   }
 
   initialize() {
@@ -34,16 +33,27 @@ class MaccyMenu extends PanelMenu.Button {
     this.add_actor(this.icon);
   }
 
+  setupPopupMenu() {
+    const fullname = GLib.get_real_name();
+    const layout = this.generateLayout(fullname);
+    this.renderPopupMenu(layout);
+    this.connect("button-press-event", () => this.renderPopupMenu(layout));
+  }
+
   generateLayout(fullname) {
     LAYOUT[LAYOUT.length - 1].title = `Logout ${fullname}...`;
     return LAYOUT;
   }
 
   renderPopupMenu(layout) {
+    this.menu.removeAll();
     layout.forEach((item) => {
       switch (item.type) {
         case "menu":
           this.makeMenu(item.title, item.cmds);
+          break;
+        case "expandable-menu":
+          this.makeExpandableMenu(item.title);
           break;
         case "separator":
           this.makeSeparator();
@@ -81,6 +91,16 @@ class MaccyMenu extends PanelMenu.Button {
   makeMenu(title, cmds) {
     const popUpMenu = new PopupMenu.PopupMenuItem(title);
     popUpMenu.connect("activate", () => Util.spawn(cmds).bind(this));
+    this.menu.addMenuItem(popUpMenu);
+  }
+
+  makeExpandableMenu(title) {
+    const popUpMenu = new PopupMenu.PopupSubMenuMenuItem(title);
+    const recentManager = new Gtk.RecentManager();
+    recentManager.get_items().forEach((item) => {
+      const subMenu = new PopupMenu.PopupImageMenuItem(item.get_display_name(), item.get_gicon().names[0]);
+      popUpMenu.menu.addMenuItem(subMenu);
+    });
     this.menu.addMenuItem(popUpMenu);
   }
 

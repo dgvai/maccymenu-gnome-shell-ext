@@ -21,6 +21,13 @@ var LAYOUT = [
     type: "separator",
   },
   {
+    type: "expandable-menu",
+    title: "Recent Items"
+  },
+  {
+    type: "separator",
+  },
+  {
     type: "menu",
     title: "Force Quit",
     cmds: ["xkill"],
