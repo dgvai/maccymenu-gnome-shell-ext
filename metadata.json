@@ -2,7 +2,7 @@
   "name": "Maccy Menu",
   "description": "Menu Item like MacOS",
   "uuid": "maccymenu@dgvai.com",
-  "shell-version": ["43", "44"],
+  "shell-version": ["42", "43", "44"],
   "gettext-domain": "gnome-shell-extension-maccymenu",
   "settings-schema": "org.gnome.shell.extensions.maccymenu",
   "url": "https://github.com/dgvai/maccymenu-gnome-shell-ext"
