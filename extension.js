@@ -33,6 +33,32 @@ class MaccyMenu extends PanelMenu.Button {
     this.add_actor(this.icon);
   }
 
+  loadConfig() {
+    this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
+
+    this._settingsC = this._settings.connect("changed::icon", this.setIcon.bind(this));
+
+    this._settingsC = this._settings.connect(
+      "changed::activity-menu-visibility",
+      this.toggleActivityMenuVisibility.bind(this)
+    );
+  }
+
+  setIcon() {
+    const iconIndex = this._settings.get_int("icon");
+    const path = Me.path + ICONS[iconIndex].path;
+    this.icon.gicon = Gio.icon_new_for_string(path);
+  }
+
+  toggleActivityMenuVisibility() {
+    const showActivity = this._settings.get_boolean("activity-menu-visibility");
+    if (showActivity) {
+      Main.panel.statusArea["activities"].container.show();
+    } else {
+      Main.panel.statusArea["activities"].container.hide();
+    }
+  }
+
   setupPopupMenu() {
     const fullname = GLib.get_real_name();
     const layout = this.generateLayout(fullname);
@@ -60,32 +86,6 @@ class MaccyMenu extends PanelMenu.Button {
           break;
       }
     });
-  }
-
-  loadConfig() {
-    this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
-
-    this._settingsC = this._settings.connect("changed::icon", this.setIcon.bind(this));
-
-    this._settingsC = this._settings.connect(
-      "changed::activity-menu-visibility",
-      this.toggleActivityMenuVisibility.bind(this)
-    );
-  }
-
-  setIcon() {
-    const iconIndex = this._settings.get_int("icon");
-    const path = Me.path + ICONS[iconIndex].path;
-    this.icon.gicon = Gio.icon_new_for_string(path);
-  }
-
-  toggleActivityMenuVisibility() {
-    const showActivity = this._settings.get_boolean("activity-menu-visibility");
-    if (showActivity) {
-      Main.panel.statusArea["activities"].container.show();
-    } else {
-      Main.panel.statusArea["activities"].container.hide();
-    }
   }
 
   makeMenu(title, cmds) {
