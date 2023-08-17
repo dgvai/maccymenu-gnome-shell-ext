@@ -95,10 +95,14 @@ class MaccyMenu extends PanelMenu.Button {
   makeExpandableMenu(title) {
     const popUpMenu = new PopupMenu.PopupSubMenuMenuItem(title);
     const recentManager = new Gtk.RecentManager();
-    recentManager.get_items().forEach((item) => {
-      const subMenu = new PopupMenu.PopupImageMenuItem(item.get_display_name(), item.get_gicon().names[0]);
+    const items = recentManager.get_items();
+    let counter = 0;
+    for (let i = 0; i < items.length; i++) {
+      const subMenu = new PopupMenu.PopupImageMenuItem(items[i].get_display_name(), items[i].get_gicon().names[0]);
       popUpMenu.menu.addMenuItem(subMenu);
-    });
+      if (counter === 15) break;
+      counter++;
+    }
     this.menu.addMenuItem(popUpMenu);
   }
 
