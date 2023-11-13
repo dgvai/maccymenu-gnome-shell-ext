@@ -66,7 +66,7 @@ class MaccyMenu extends PanelMenu.Button {
   }
 
   generateLayout(fullname) {
-    LAYOUT[LAYOUT.length - 1].title = `Encerrar Sessão ${fullname}...`;
+    LAYOUT[LAYOUT.length - 1].title = `Logout ${fullname}...`;
     return LAYOUT;
   }
 
