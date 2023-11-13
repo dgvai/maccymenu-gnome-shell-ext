@@ -45,6 +45,7 @@ class MaccyMenu extends PanelMenu.Button {
   setIcon() {
     const iconIndex = this._settings.get_int("icon");
     const path = Me.path + ICONS[iconIndex].path;
+    this.icon.style = "width: 24px; height: 24px;"; 
     this.icon.gicon = Gio.icon_new_for_string(path);
   }
 
@@ -95,10 +96,23 @@ class MaccyMenu extends PanelMenu.Button {
   makeExpandableMenu(title) {
     const popUpMenu = new PopupMenu.PopupSubMenuMenuItem(title);
     const recentManager = new Gtk.RecentManager();
-    recentManager.get_items().forEach((item) => {
-      const subMenu = new PopupMenu.PopupImageMenuItem(item.get_display_name(), item.get_gicon().names[0]);
+    const items = recentManager.get_items();
+    let counter = 0;
+    for (let i = 0; i < items.length; i++) {
+      const subMenu = new PopupMenu.PopupImageMenuItem(items[i].get_display_name(), items[i].get_gicon().names[0]);
       popUpMenu.menu.addMenuItem(subMenu);
-    });
+      subMenu.connect('activate', () => {
+      	const uri = items[i].get_uri();
+        if (uri) {
+          Util.spawnCommandLine(`xdg-open "${uri}"`);
+        }
+      });
+      if (counter === 5) break;
+      counter++;
+    }
+      if (counter === 5) break;
+      counter++;
+    }
     this.menu.addMenuItem(popUpMenu);
   }
 
