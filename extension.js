@@ -34,7 +34,10 @@ class MaccyMenu extends PanelMenu.Button {
   loadConfig() {
     this._settings = ExtensionUtils.getSettings(Me.metadata["settings-schema"]);
 
-    this._settingsC = this._settings.connect("changed::icon", this.setIcon.bind(this));
+    this._settingsC = this._settings.connect(
+      "changed::icon",
+      this.setIcon.bind(this)
+    );
 
     this._settingsC = this._settings.connect(
       "changed::activity-menu-visibility",
@@ -45,6 +48,7 @@ class MaccyMenu extends PanelMenu.Button {
   setIcon() {
     const iconIndex = this._settings.get_int("icon");
     const path = Me.path + ICONS[iconIndex].path;
+    this.icon.style = "width: 24px; height: 24px;";
     this.icon.gicon = Gio.icon_new_for_string(path);
   }
 
@@ -98,8 +102,19 @@ class MaccyMenu extends PanelMenu.Button {
     const items = recentManager.get_items();
     let counter = 0;
     for (let i = 0; i < items.length; i++) {
-      const subMenu = new PopupMenu.PopupImageMenuItem(items[i].get_display_name(), items[i].get_gicon().names[0]);
+      const subMenu = new PopupMenu.PopupImageMenuItem(
+        items[i].get_display_name(),
+        items[i].get_gicon().names[0]
+      );
       popUpMenu.menu.addMenuItem(subMenu);
+
+      subMenu.connect("activate", () => {
+        const uri = items[i].get_uri();
+        if (uri) {
+          Util.spawnCommandLine(`xdg-open "${uri}"`);
+        }
+      });
+
       if (counter === 15) break;
       counter++;
     }
