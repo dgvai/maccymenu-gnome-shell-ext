@@ -101,6 +101,15 @@ class MaccyMenu extends PanelMenu.Button {
     for (let i = 0; i < items.length; i++) {
       const subMenu = new PopupMenu.PopupImageMenuItem(items[i].get_display_name(), items[i].get_gicon().names[0]);
       popUpMenu.menu.addMenuItem(subMenu);
+      subMenu.connect('activate', () => {
+      	const uri = items[i].get_uri();
+        if (uri) {
+          Util.spawnCommandLine(`xdg-open "${uri}"`);
+        }
+      });
+      if (counter === 5) break;
+      counter++;
+    }
       if (counter === 5) break;
       counter++;
     }
